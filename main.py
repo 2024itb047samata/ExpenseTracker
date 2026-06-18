@@ -16,6 +16,9 @@ def add_expense():
 
     try:
         amount = float(input("Enter amount: "))
+        if amount <= 0:
+            print("Amount must be greater than 0.")
+            return
     except ValueError:
         print("Invalid amount!")
         return
@@ -37,6 +40,24 @@ def add_expense():
 
     check_budget()
 
+def category_report():
+    if not expenses:
+        print("No expenses found.")
+        return
+
+    totals = {}
+
+    for expense in expenses:
+        category = expense["category"]
+        totals[category] = totals.get(category, 0) + expense["amount"]
+
+    total_spending = sum(totals.values())
+
+    print("\n----- CATEGORY REPORT -----")
+
+    for category, amount in totals.items():
+        percentage = (amount / total_spending) * 100
+        print(f"{category:<10} Rs.{amount:.2f} ({percentage:.1f}%)")
 
 def view_expenses():
     if len(expenses) == 0:
@@ -51,6 +72,34 @@ def view_expenses():
             f"Amount: Rs. {expense['amount']} | "
             f"Category: {expense['category']}"
         )
+
+def daily_average():
+    if not expenses:
+        print("No expenses found.")
+        return
+
+    total = sum(expense["amount"] for expense in expenses)
+
+    unique_days = set()
+
+    for expense in expenses:
+        unique_days.add(expense["date"])
+
+    average = total / len(unique_days)
+
+    print(f"\nAverage Daily Spending: Rs. {average:.2f}")
+
+def largest_expense():
+    if not expenses:
+        print("No expenses found.")
+        return
+
+    largest = max(expenses, key=lambda x: x["amount"])
+
+    print("\n----- LARGEST EXPENSE -----")
+    print(f"Date     : {largest['date']}")
+    print(f"Amount   : Rs. {largest['amount']}")
+    print(f"Category : {largest['category']}")
 
 
 def total_spent():
@@ -89,7 +138,31 @@ def set_budget():
 
     except ValueError:
         print("Invalid budget amount!")
+        
+def financial_insights():
+    if not expenses:
+        print("No expenses found.")
+        return
 
+    total = sum(expense["amount"] for expense in expenses)
+    average = total / len(expenses)
+
+    largest = max(expenses, key=lambda x: x["amount"])
+
+    totals = {}
+
+    for expense in expenses:
+        category = expense["category"]
+        totals[category] = totals.get(category, 0) + expense["amount"]
+
+    top_category = max(totals, key=totals.get)
+
+    print("\n----- FINANCIAL INSIGHTS -----")
+    print(f"Total Expenses      : {len(expenses)}")
+    print(f"Total Spending      : Rs. {total:.2f}")
+    print(f"Average Expense     : Rs. {average:.2f}")
+    print(f"Largest Expense     : Rs. {largest['amount']:.2f}")
+    print(f"Top Category        : {top_category}")
 
 def check_budget():
     if monthly_budget is None:
@@ -119,7 +192,11 @@ def main():
         print("3. Total Amount Spent")
         print("4. Highest Spending Category")
         print("5. Set Monthly Budget")
-        print("6. Exit")
+        print("6. Category Report")
+        print("7. Daily Average Spending")
+        print("8. Largest Expense")
+        print("9. Financial Insights")
+        print("10. Exit")
 
         choice = input("Enter your choice: ").strip()
 
@@ -137,8 +214,19 @@ def main():
 
         elif choice == "5":
             set_budget()
-
         elif choice == "6":
+            category_report()
+
+        elif choice == "7":
+            daily_average()
+
+        elif choice == "8":
+            largest_expense()
+
+        elif choice == "9":
+            financial_insights()
+
+        elif choice == "10":
             print("Thank you for using Expense Tracker!")
             break
 
