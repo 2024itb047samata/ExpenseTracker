@@ -138,7 +138,7 @@ def set_budget():
 
     except ValueError:
         print("Invalid budget amount!")
-        
+
 def financial_insights():
     if not expenses:
         print("No expenses found.")
@@ -163,6 +163,47 @@ def financial_insights():
     print(f"Average Expense     : Rs. {average:.2f}")
     print(f"Largest Expense     : Rs. {largest['amount']:.2f}")
     print(f"Top Category        : {top_category}")
+
+def financial_health_score():
+    if not expenses:
+        print("No expenses found.")
+        return
+
+    total = sum(expense["amount"] for expense in expenses)
+
+    food = sum(e["amount"] for e in expenses if e["category"] == "food")
+    travel = sum(e["amount"] for e in expenses if e["category"] == "travel")
+    recharge = sum(e["amount"] for e in expenses if e["category"] == "recharge")
+
+    score = 100
+
+    if monthly_budget:
+        usage = (total / monthly_budget) * 100
+
+        if usage > 100:
+            score -= 40
+        elif usage > 80:
+            score -= 15
+
+    if recharge > total * 0.5:
+        score -= 10
+
+    if travel > total * 0.4:
+        score -= 10
+
+    score = max(0, score)
+
+    print("\n----- FINANCIAL HEALTH SCORE -----")
+    print(f"Score : {score}/100")
+
+    if score >= 80:
+        print("Status : Excellent")
+    elif score >= 60:
+        print("Status : Good")
+    elif score >= 40:
+        print("Status : Average")
+    else:
+        print("Status : Needs Improvement")
 
 def check_budget():
     if monthly_budget is None:
@@ -196,7 +237,8 @@ def main():
         print("7. Daily Average Spending")
         print("8. Largest Expense")
         print("9. Financial Insights")
-        print("10. Exit")
+        print("10. Financial Health Score")
+        print("11. Exit")
 
         choice = input("Enter your choice: ").strip()
 
@@ -227,6 +269,9 @@ def main():
             financial_insights()
 
         elif choice == "10":
+            financial_health_score()
+
+        elif choice == "11":
             print("Thank you for using Expense Tracker!")
             break
 
